@@ -161,15 +161,6 @@ export class UserDto {
   country_code?: string;
 
   @ApiProperty()
-  years_of_experience?: string;
-
-  @ApiProperty()
-  position_in_company?: string;
-
-  @ApiProperty()
-  availability?: string;
-
-  @ApiProperty()
   password: string;
 
   user_id: string;
@@ -208,15 +199,6 @@ export class UserUpdateDto {
 
   @ApiProperty()
   country_code?: string;
-
-  @ApiProperty()
-  years_of_experience?: string;
-
-  @ApiProperty()
-  position_in_company?: string;
-
-  @ApiProperty()
-  availability?: string;
 
   @ApiProperty()
   password: string;

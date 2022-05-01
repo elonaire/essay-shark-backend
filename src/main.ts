@@ -15,7 +15,7 @@ async function bootstrap() {
     .setTitle('Essay Shark Web API')
     .setDescription('Essay Shark Web API')
     .setVersion('1.0')
-    .addTag('Essay Shark Web API')
+    // .addTag('Essay Shark Web API')
     .addBearerAuth({ in: 'header', type: 'http' }, 'Authorization')
     .build();
     const document = SwaggerModule.createDocument(app, config);
