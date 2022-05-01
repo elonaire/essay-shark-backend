@@ -12,7 +12,7 @@ import {
 import { AnyFilesInterceptor } from '@nestjs/platform-express';
 import { FileUploadService } from './file-upload.service';
 import { FileDto } from './file.entity';
-import { ApiBearerAuth, ApiQuery, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiConsumes, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/auth.guard';
 
 export interface FileInfo {
@@ -34,6 +34,18 @@ export class FileUploadController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('Authorization')
   @Post('upload')
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        file: {
+          type: 'string',
+          format: 'binary',
+        },
+      },
+    },
+  })
   @UseInterceptors(
     AnyFilesInterceptor({
       limits: {
