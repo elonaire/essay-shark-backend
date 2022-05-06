@@ -31,6 +31,11 @@ export class UsersService {
         @Inject(USER_ROLES_REPOSITORY) private userRolesRepository: typeof UserRole,
       ) {}
     
+      /**
+       * Create a new user in the system
+       * @param userInfo - user to be added
+       * @returns 
+       */
       async registerUser(userInfo: UserDto): Promise<any> {
         let userExists = null;
         userExists = await this.getSingleUser(
@@ -87,6 +92,11 @@ export class UsersService {
         }
       }
     
+      /**
+       * Delete a user
+       * @param user_id - user_id of the user to be deleted
+       * @returns 
+       */
       async deleteUser(user_id: string): Promise<any> {
         const deletedUser = await this.usersRepository.destroy({
           where: { user_id },
@@ -99,6 +109,11 @@ export class UsersService {
         };
       }
     
+      /**
+       * Update a user's details
+       * @param userInfo - user to be updated
+       * @returns 
+       */
       async updateUser(userInfo: UserUpdateDto): Promise<any> {
         if (userInfo.password) {
           userInfo.password = await bcrypt.hash(userInfo.password, 10);
@@ -111,6 +126,11 @@ export class UsersService {
         };
       }
     
+      /**
+       * Get users
+       * @param params 
+       * @returns 
+       */
       async getAllUsers(...params: any[]): Promise<UserResponse[]> {
         // console.log('params', params);
     
@@ -126,6 +146,13 @@ export class UsersService {
         return users;
       }
     
+      /**
+       * Get a single user
+       * @param findBy - either 'username' or 'email'
+       * @param check 
+       * @param userDetails 
+       * @returns 
+       */
       async getSingleUser(
         findBy: string[],
         check: 'either' | 'all',
@@ -157,6 +184,11 @@ export class UsersService {
         }
       }
     
+      /**
+       * Create a new role in the system
+       * @param roleInfo - role to be created
+       * @returns 
+       */
       async addRole(roleInfo: RoleDto): Promise<any> {
         const roleExists = await this.rolesRepository.findOne<Role>({
           where: { role: roleInfo.role },
@@ -171,6 +203,11 @@ export class UsersService {
         };
       }
     
+      /**
+       * Add a role to a user's profile
+       * @param roleInfo - role to be added to a user's profile
+       * @returns 
+       */
       async addUserRole(roleInfo: UserRoleDto): Promise<any> {
         // verify role existance in DB
         const roleFound: Role = await this.rolesRepository.findOne<Role>({
@@ -200,6 +237,11 @@ export class UsersService {
         };
       }
     
+      /**
+       * Get all roles for a user
+       * @param params - array of objects with user_id and role_id
+       * @returns 
+       */
       async getRoles(...params: any[]): Promise<RoleDto[] | UserRoleDto[]> {
         let roles: RoleDto[] | UserRoleDto[];
         if (params.length > 0) {
@@ -212,6 +254,11 @@ export class UsersService {
         return roles;
       }
     
+      /**
+       * Revoke a role from the system
+       * @param role_id - role_id of the role to be deleted
+       * @returns 
+       */
       async revokeRole(role_id: string): Promise<any> {
         const revokedRole = await this.rolesRepository.destroy({
           where: { role_id },
@@ -222,6 +269,11 @@ export class UsersService {
         return revokedRole;
       }
     
+      /**
+       * Revokes a user's role
+       * @param role_id role_id of the role to be revoked
+       * @returns 
+       */
       async revokeUserRole(role_id: string): Promise<any> {
         const revokedRole = await this.userRolesRepository.destroy({
           where: { role_id, isPrimary: { [Op.ne]: 'true' } },
