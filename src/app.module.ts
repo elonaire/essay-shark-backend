@@ -13,6 +13,7 @@ import { FileUploadModule } from './file-upload/file-upload.module';
 import { MailingServiceModule } from './mailing-service/mailing-service.module';
 import { UsersModule } from './users/users.module';
 import {MailerModule as NodeMailerModule} from '@nestjs-modules/mailer';
+import { OrdersModule } from './orders/orders.module';
 
 @Module({
   imports: [
@@ -39,6 +40,7 @@ import {MailerModule as NodeMailerModule} from '@nestjs-modules/mailer';
       },
     }),
     MailingServiceModule,
+    OrdersModule,
   ],
   controllers: [AppController],
   providers: [AppService, GoogleStrategy, FacebookStrategy, LinkedInStrategy, SessionSerializer],

@@ -2,6 +2,7 @@ import { Sequelize } from 'sequelize-typescript';
 import { SEQUELIZE } from '../constants';
 import { Role, User, UserRole } from '../users/user.entity';
 import { File } from '../file-upload/file.entity';
+import { Order, OrderTypeOfPaper, TypeOfPaper } from 'src/orders/order.entity';
 
 export const databaseProviders = [
   {
@@ -15,7 +16,7 @@ export const databaseProviders = [
         password: process.env.DATABASE_PWD,
         database: process.env.DATABASE,
       });
-      sequelize.addModels([User, Role, UserRole, File]);
+      sequelize.addModels([User, Role, UserRole, File, Order, TypeOfPaper, OrderTypeOfPaper]);
       await sequelize.sync();
       return sequelize;
     },

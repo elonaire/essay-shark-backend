@@ -1,4 +1,5 @@
 import { Table, Column, AllowNull, Model, BelongsTo, ForeignKey } from 'sequelize-typescript';
+import { Order } from 'src/orders/order.entity';
 import { User } from 'src/users/user.entity';
 
 @Table
@@ -34,8 +35,16 @@ export class File extends Model<File> {
   @Column
   user_id: string;
 
+  @ForeignKey(() => Order)
+  @AllowNull(true)
+  @Column
+  orderId?: string;
+
   @BelongsTo(() => User)
   owner: User;
+
+  @BelongsTo(() => Order)
+  order: Order;
 }
 
 
