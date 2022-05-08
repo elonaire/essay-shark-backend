@@ -47,10 +47,22 @@ export class OrdersService {
 
     async fetchOrders({typeOfPaperId}): Promise<Order[]> {
         if (typeOfPaperId) {
-            const typeOfPaper: TypeOfPaper = await this.orderTypeOfPaperRepo.findOne();
-            return await typeOfPaper.$get('orders')
+            const typeOfPaper: TypeOfPaper = await this.typeOfPaperRepo.findOne({
+                where: {
+                    typeOfPaperId,
+                },
+                include: ['orders']
+            });
+            return await typeOfPaper['orders'];
         }
-        return await this.ordersRepository.findAll();
+        return await this.ordersRepository.findAll({
+            include: [
+                {
+                    model: this.orderTypeOfPaperRepo,
+                    as: 'typeOfPaper',
+                }
+            ]
+        });
     }
 
     async fetchPaperTypes(): Promise<TypeOfPaper[]> {

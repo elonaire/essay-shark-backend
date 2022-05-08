@@ -3,7 +3,7 @@ import { Order } from 'src/orders/order.entity';
 import { User } from 'src/users/user.entity';
 
 @Table
-export class File extends Model<File> {
+export class FileUpload extends Model<FileUpload> {
   // @Column({ primaryKey: true })
   // file_id: string;
 

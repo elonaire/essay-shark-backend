@@ -1,6 +1,5 @@
 import { Table, Column, Model, ForeignKey, BelongsToMany, IsEmail, AllowNull, HasMany, BelongsTo } from 'sequelize-typescript';
 import { ApiProperty } from '@nestjs/swagger';
-import { File } from 'src/file-upload/file.entity';
 
 @Table
 export class User extends Model<User> {

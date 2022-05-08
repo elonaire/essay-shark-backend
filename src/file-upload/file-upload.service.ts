@@ -1,7 +1,7 @@
 import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { FILE_UPLOAD_REPOSITORY } from '../constants';
 import { FileInfo } from './file-upload.controller';
-import { File, FileDto } from './file.entity';
+import { FileDto, FileUpload } from './file.entity';
 import * as fs from 'fs';
 import * as path from 'path';
 import { Op } from 'sequelize';
@@ -9,7 +9,7 @@ import { Op } from 'sequelize';
 @Injectable()
 export class FileUploadService {
   constructor(
-    @Inject(FILE_UPLOAD_REPOSITORY) private filesRepository: typeof File
+    @Inject(FILE_UPLOAD_REPOSITORY) private filesRepository: typeof FileUpload
   ) {}
   async uploadFile(files: FileInfo[]): Promise<FileDto[]> {
     const createdFiles = [];

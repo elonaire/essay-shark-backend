@@ -1,6 +1,6 @@
 import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { v4 as uuidGenerator } from 'uuid';
-import { UserRoleDto, Role, RoleDto, User, UserResponse, UserRole, UserUpdateDto, UserDto } from './user.entity';
+import { UserRoleDto, Role, RoleDto, UserUpdateDto, UserDto, UserResponse, User, UserRole } from './user.entity';
 import * as bcrypt from 'bcrypt';
 import { Op } from 'sequelize';
 import {
