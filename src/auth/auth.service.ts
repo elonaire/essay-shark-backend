@@ -26,6 +26,11 @@ export class AuthService {
             HttpStatus.BAD_REQUEST,
           );
         }
+
+        if (!user.userApproved) {
+          throw new HttpException('Your Account is still under review!', HttpStatus.FORBIDDEN);
+        }
+
         const passWordConfirmed = await bcrypt.compare(
           loginDetails.password,
           user.password,

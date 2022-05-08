@@ -47,7 +47,7 @@ export class User extends Model<User> {
   country_code: string;
 
   @AllowNull(false)
-  @Column({defaultValue: true})
+  @Column({defaultValue: false})
   userApproved: boolean;
 
   @AllowNull(false)
