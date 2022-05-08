@@ -39,17 +39,6 @@ export class TypeOfPaper extends Model<TypeOfPaper> {
     name: string;
 }
 
-@Table
-export class OrderTypeOfPaper extends Model<OrderTypeOfPaper> {
-    @ForeignKey(() => Order)
-    @Column
-    orderId: string;
-
-    @ForeignKey(() => TypeOfPaper)
-    @Column
-    typeOfPaperId: string;
-}
-
 export class OrderDto {
     orderId: string;
 

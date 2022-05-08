@@ -1,7 +1,7 @@
 import { Sequelize } from 'sequelize-typescript';
 import { SEQUELIZE } from 'src/constants';
 import { FileUpload } from 'src/file-upload/file.entity';
-import { Order, OrderTypeOfPaper, TypeOfPaper } from 'src/orders/order.entity';
+import { Order, TypeOfPaper } from 'src/orders/order.entity';
 import { Role, User, UserRole } from 'src/users/user.entity';
 
 export const globalDBProvider = {
@@ -22,7 +22,6 @@ export const globalDBProvider = {
       FileUpload,
       Order,
       TypeOfPaper,
-      OrderTypeOfPaper,
     ]);
 
     Order.hasMany(FileUpload, {

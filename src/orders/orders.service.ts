@@ -1,13 +1,12 @@
 import { HttpException, Inject, Injectable } from '@nestjs/common';
-import { ORDER_REPOSITORY, ORDER_TYPE_OF_PAPER, TYPE_OF_PAPER_REPOSITORY } from 'src/constants';
-import { Order, OrderDto, OrderTypeOfPaper, TypeOfPaper, TypeOfPaperDto } from './order.entity';
+import { ORDER_REPOSITORY, TYPE_OF_PAPER_REPOSITORY } from 'src/constants';
+import { Order, OrderDto, TypeOfPaper, TypeOfPaperDto } from './order.entity';
 import { v4 as uuidGenerator } from 'uuid';
 
 @Injectable()
 export class OrdersService {
     constructor(
         @Inject(ORDER_REPOSITORY) private ordersRepository: typeof Order,
-        @Inject(ORDER_TYPE_OF_PAPER) private orderTypeOfPaperRepo: typeof OrderTypeOfPaper,
         @Inject(TYPE_OF_PAPER_REPOSITORY) private typeOfPaperRepo: typeof TypeOfPaper
     ) {}
 
@@ -55,14 +54,7 @@ export class OrdersService {
             });
             return await typeOfPaper['orders'];
         }
-        return await this.ordersRepository.findAll({
-            include: [
-                {
-                    model: this.orderTypeOfPaperRepo,
-                    as: 'typeOfPaper',
-                }
-            ]
-        });
+        return await this.ordersRepository.findAll();
     }
 
     async fetchPaperTypes(): Promise<TypeOfPaper[]> {
