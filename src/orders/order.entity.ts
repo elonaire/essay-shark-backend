@@ -10,6 +10,10 @@ export class Order extends Model<Order> {
 
     @AllowNull(false)
     @Column
+    title: string
+
+    @AllowNull(false)
+    @Column
     deadline: Date
 
     @AllowNull(false)
@@ -55,6 +59,9 @@ export class OrderTypeOfPaper extends Model<OrderTypeOfPaper> {
 
 export class OrderDto {
     orderId: string;
+
+    @ApiProperty()
+    title: string;
 
     @ApiProperty()
     deadline: Date;
