@@ -28,9 +28,10 @@ export class OrdersController {
     @UseGuards(JwtAuthGuard)
     @ApiBearerAuth('Authorization')
     @ApiQuery({ name: 'typeOfPaperId', required: false})
+    @ApiQuery({ name: 'orderId', required: false})
     @Get('fetch-orders')
-    fetchOrders(@Query('typeOfPaperId') typeOfPaperId?: string) {
-        return this.ordersService.fetchOrders({typeOfPaperId});
+    fetchOrders(@Query('typeOfPaperId') typeOfPaperId?: string, @Query('orderId') orderId?: string) {
+        return this.ordersService.fetchOrders({typeOfPaperId, orderId});
     }
 
     @Get('fetch-paper-types')

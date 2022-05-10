@@ -72,7 +72,7 @@ export class OrdersService {
     return createdTypeOfPaper;
   }
 
-  async fetchOrders({ typeOfPaperId }): Promise<Order[]> {
+  async fetchOrders({ typeOfPaperId, orderId }): Promise<Order[] | Order> {
     if (typeOfPaperId) {
       const typeOfPaper: TypeOfPaper = await this.typeOfPaperRepo.findOne({
         where: {
@@ -82,6 +82,22 @@ export class OrdersService {
       });
       return await typeOfPaper['orders'];
     }
+
+    if (orderId) {
+        const order: Order = await this.ordersRepository.findOne({
+            where: {
+                orderId,
+            },
+            include: ['status', 'user', 'typeOfPaper'],
+        });
+
+        if (!order) {
+            throw new HttpException('Invalid order id', 400);
+        }
+
+        return order;
+    }
+
     return await this.ordersRepository.findAll({
       include: [{model: TypeOfPaper, as: 'typeOfPaper'}, {model: OrderStatus, as: 'status'}],
     });
