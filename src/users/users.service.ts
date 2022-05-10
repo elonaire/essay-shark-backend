@@ -39,7 +39,7 @@ export class UsersService {
       async registerUser(userInfo: UserDto): Promise<any> {
         let userExists = null;
         userExists = await this.getSingleUser(
-          [ 'email', 'phone'],
+          [ 'email', 'phone', 'username'],
           'either',
           userInfo,
         );

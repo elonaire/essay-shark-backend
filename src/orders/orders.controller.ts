@@ -1,8 +1,8 @@
-import { Body, Controller, Get, Post, Query, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Post, Query, UseGuards, Headers } from '@nestjs/common';
 import { ApiBearerAuth, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/auth.guard';
 import { Roles, AuthRole } from 'src/auth/roles.decorator';
-import { OrderDto, TypeOfPaperDto } from './order.entity';
+import { OrderDto, OrderStatusDto, TypeOfPaperDto } from './order.entity';
 import { OrdersService } from './orders.service';
 
 @ApiTags('Orders')
@@ -13,8 +13,8 @@ export class OrdersController {
     @UseGuards(JwtAuthGuard)
     @ApiBearerAuth('Authorization')
     @Post('create-order')
-    createOrder(@Body() orderDetails: OrderDto) {
-        return this.ordersService.createNewOrder(orderDetails);
+    createOrder(@Body() orderDetails: OrderDto, @Headers() headers?: any) {
+        return this.ordersService.createNewOrder(orderDetails, headers);
     }
 
     @UseGuards(JwtAuthGuard)
@@ -36,5 +36,19 @@ export class OrdersController {
     @Get('fetch-paper-types')
     fetchPaperTypes() {
         return this.ordersService.fetchPaperTypes();
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth('Authorization')
+    @Post('create-order-status')
+    createOrderStatus(@Body() orderStatusInfo: OrderStatusDto) {
+        return this.ordersService.createOrderStatus(orderStatusInfo);
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth('Authorization')
+    @Get('fetch-order-statuses')
+    fetchOrderStatuses() {
+        return this.ordersService.fetchOrderStatuses();
     }
 }

@@ -1,7 +1,7 @@
 import { Sequelize } from 'sequelize-typescript';
 import { SEQUELIZE } from 'src/constants';
 import { FileUpload } from 'src/file-upload/file.entity';
-import { Order, TypeOfPaper } from 'src/orders/order.entity';
+import { Order, OrderStatus, TypeOfPaper } from 'src/orders/order.entity';
 import { Role, User, UserRole } from 'src/users/user.entity';
 
 export const globalDBProvider = {
@@ -22,6 +22,7 @@ export const globalDBProvider = {
       FileUpload,
       Order,
       TypeOfPaper,
+      OrderStatus
     ]);
 
     Order.hasMany(FileUpload, {
@@ -38,6 +39,26 @@ export const globalDBProvider = {
     TypeOfPaper.hasMany(Order, {
       as: 'orders',
       foreignKey: 'typeOfPaperId',
+    });
+
+    Order.belongsTo(OrderStatus, {
+      as: 'status',
+      foreignKey: 'orderStatusId',
+    })
+
+    OrderStatus.hasMany(Order, {
+      as: 'orders',
+      foreignKey: 'orderStatusId',
+    });
+
+    User.hasMany(Order, {
+      as: 'orders',
+      foreignKey: 'userId',
+    });
+
+    Order.belongsTo(User, {
+      as: 'user',
+      foreignKey: 'userId',
     });
     await sequelize.sync();
     return sequelize;

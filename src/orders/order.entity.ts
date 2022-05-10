@@ -1,5 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { Table, Model, Column, AllowNull, ForeignKey } from "sequelize-typescript";
+import { User } from "src/users/user.entity";
 
 @Table
 export class Order extends Model<Order> {
@@ -23,9 +24,20 @@ export class Order extends Model<Order> {
     @Column
     description: string;
 
+    @AllowNull(false)
     @ForeignKey(() => TypeOfPaper)
     @Column
     typeOfPaperId: string;
+
+    @AllowNull(false)
+    @ForeignKey(() => OrderStatus)
+    @Column
+    orderStatusId: string;
+
+    @AllowNull(false)
+    @ForeignKey(() => User)
+    @Column
+    userId: string;
 }
 
 @Table
@@ -33,6 +45,17 @@ export class TypeOfPaper extends Model<TypeOfPaper> {
     @AllowNull(false)
     @Column({primaryKey: true})
     typeOfPaperId: string;
+
+    @AllowNull(false)
+    @Column
+    name: string;
+}
+
+@Table
+export class OrderStatus extends Model<OrderStatus> {
+    @AllowNull(false)
+    @Column({primaryKey: true})
+    orderStatusId: string;
 
     @AllowNull(false)
     @Column
@@ -56,11 +79,22 @@ export class OrderDto {
 
     @ApiProperty()
     typeOfPaperId: string;
+
+    orderStatusId: string;
+
+    userId: string;
 }
 
 export class TypeOfPaperDto {
     typeOfPaperId: string;
     
+    @ApiProperty()
+    name: string;
+}
+
+export class OrderStatusDto {
+    orderStatusId: string;  
+
     @ApiProperty()
     name: string;
 }
