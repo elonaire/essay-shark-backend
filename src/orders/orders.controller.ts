@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Query, UseGuards, Headers } from '@nestjs/common';
+import { Body, Controller, Get, Post, Query, UseGuards, Headers, Patch } from '@nestjs/common';
 import { ApiBearerAuth, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/auth.guard';
 import { Roles, AuthRole } from 'src/auth/roles.decorator';
@@ -51,5 +51,12 @@ export class OrdersController {
     @Get('fetch-order-statuses')
     fetchOrderStatuses() {
         return this.ordersService.fetchOrderStatuses();
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth('Authorization')
+    @Patch('update-order')
+    updateOrder(@Body() orderDetails: OrderDto) {
+        return this.ordersService.updateOrder(orderDetails);
     }
 }

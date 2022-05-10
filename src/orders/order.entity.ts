@@ -80,6 +80,7 @@ export class OrderDto {
     @ApiProperty()
     typeOfPaperId: string;
 
+    @ApiProperty()
     orderStatusId: string;
 
     userId: string;

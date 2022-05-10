@@ -1,6 +1,17 @@
 import { HttpException, Inject, Injectable } from '@nestjs/common';
-import { ORDER_REPOSITORY, ORDER_STATUS_REPOSITORY, TYPE_OF_PAPER_REPOSITORY } from 'src/constants';
-import { Order, OrderDto, OrderStatus, OrderStatusDto, TypeOfPaper, TypeOfPaperDto } from './order.entity';
+import {
+  ORDER_REPOSITORY,
+  ORDER_STATUS_REPOSITORY,
+  TYPE_OF_PAPER_REPOSITORY,
+} from 'src/constants';
+import {
+  Order,
+  OrderDto,
+  OrderStatus,
+  OrderStatusDto,
+  TypeOfPaper,
+  TypeOfPaperDto,
+} from './order.entity';
 import { v4 as uuidGenerator } from 'uuid';
 import { JwtService } from '@nestjs/jwt';
 
@@ -19,6 +30,12 @@ export class OrdersService {
     @Inject(ORDER_STATUS_REPOSITORY) private orderStatusRepo: typeof OrderStatus
   ) {}
 
+  /**
+   * Create order
+   * @param orderDetails Order details
+   * @param headers
+   * @returns Order
+   */
   async createNewOrder(orderDetails: OrderDto, headers: any): Promise<Order> {
     const user: JwtEncodedUser = await this.jwtService.verifyAsync(
       headers.authorization.replace('Bearer ', ''),
@@ -36,13 +53,13 @@ export class OrdersService {
     }
 
     const foundOrderStatus = await this.orderStatusRepo.findOne({
-        where: {
-            name: 'PENDING',
-        }
+      where: {
+        name: 'PENDING',
+      },
     });
 
     if (!foundOrderStatus) {
-        throw new HttpException('Invalid order status. Contact Admin', 400);
+      throw new HttpException('Invalid order status. Contact Admin', 400);
     }
 
     orderDetails.orderStatusId = foundOrderStatus.orderStatusId;
@@ -60,7 +77,14 @@ export class OrdersService {
     return createdOrder;
   }
 
-  async createTypeOfPaper(typeOfPaperInfo: TypeOfPaperDto) {
+  /**
+   * create type of paper
+   * @param typeOfPaperInfo Type of paper info
+   * @returns
+   */
+  async createTypeOfPaper(
+    typeOfPaperInfo: TypeOfPaperDto
+  ): Promise<TypeOfPaper> {
     typeOfPaperInfo.typeOfPaperId = uuidGenerator();
 
     const createdTypeOfPaper = this.typeOfPaperRepo.create(typeOfPaperInfo);
@@ -72,6 +96,11 @@ export class OrdersService {
     return createdTypeOfPaper;
   }
 
+  /**
+   * Fetch all orders, by id or by type of paper
+   * @param param0
+   * @returns Promise<Order[] | Order>
+   */
   async fetchOrders({ typeOfPaperId, orderId }): Promise<Order[] | Order> {
     if (typeOfPaperId) {
       const typeOfPaper: TypeOfPaper = await this.typeOfPaperRepo.findOne({
@@ -84,40 +113,120 @@ export class OrdersService {
     }
 
     if (orderId) {
-        const order: Order = await this.ordersRepository.findOne({
-            where: {
-                orderId,
-            },
-            include: ['status', 'user', 'typeOfPaper'],
-        });
+      const order: Order = await this.ordersRepository.findOne({
+        where: {
+          orderId,
+        },
+        include: ['status', 'user', 'typeOfPaper'],
+      });
 
-        if (!order) {
-            throw new HttpException('Invalid order id', 400);
-        }
+      if (!order) {
+        throw new HttpException('Invalid order id', 400);
+      }
 
-        return order;
+      return order;
     }
 
     return await this.ordersRepository.findAll({
-      include: [{model: TypeOfPaper, as: 'typeOfPaper'}, {model: OrderStatus, as: 'status'}],
+      include: [
+        { model: TypeOfPaper, as: 'typeOfPaper' },
+        { model: OrderStatus, as: 'status' },
+      ],
     });
   }
 
+  /**
+   * Fetch all type of papers
+   * @returns Promise<TypeOfPaper[]>
+   */
   async fetchPaperTypes(): Promise<TypeOfPaper[]> {
     return await this.typeOfPaperRepo.findAll();
   }
 
-  async createOrderStatus(orderStatusInfo: OrderStatusDto): Promise<OrderStatus> {
+  /**
+   * Create order status
+   * @param orderStatusInfo Order status info
+   * @returns
+   */
+  async createOrderStatus(
+    orderStatusInfo: OrderStatusDto
+  ): Promise<OrderStatus> {
     orderStatusInfo.orderStatusId = uuidGenerator();
     const createdStatus = await this.orderStatusRepo.create(orderStatusInfo);
     if (!createdStatus) {
-        throw new HttpException('Not created', 400);
+      throw new HttpException('Not created', 400);
     }
 
     return createdStatus;
   }
 
+  /**
+   * Fetch all order statuses
+   * @returns Promise<OrderStatus[]>
+   */
   async fetchOrderStatuses(): Promise<OrderStatus[]> {
     return await this.orderStatusRepo.findAll();
+  }
+
+  /**
+   * Update order details
+   * @param orderInfo Order info
+   * @returns
+   */
+  async updateOrder(orderInfo: OrderDto): Promise<Order> {
+    const foundOrder = await this.ordersRepository.findOne({
+      where: {
+        orderId: orderInfo.orderId,
+      },
+      include: ['status', 'user', 'typeOfPaper'],
+    });
+
+    if (!foundOrder) {
+      throw new HttpException('Invalid order id', 400);
+    }
+
+    if (orderInfo.typeOfPaperId) {
+      const foundTypeOfPaper = await this.typeOfPaperRepo.findOne({
+        where: {
+          typeOfPaperId: orderInfo.typeOfPaperId,
+        },
+      });
+
+      if (!foundTypeOfPaper) {
+        throw new HttpException('Invalid type of paper', 400);
+      }
+      orderInfo.typeOfPaperId = foundTypeOfPaper.typeOfPaperId;
+    }
+
+    if (orderInfo.orderStatusId) {
+      const foundOrderStatus = await this.orderStatusRepo.findOne({
+        where: {
+          orderStatusId: orderInfo.orderStatusId,
+        },
+      });
+
+      if (!foundOrderStatus) {
+        throw new HttpException('Invalid order status. Contact Admin', 400);
+      }
+
+      orderInfo.orderStatusId = foundOrderStatus.orderStatusId;
+    }
+
+    const updatedOrder = await this.ordersRepository.update(orderInfo, {
+      where: {
+        orderId: orderInfo.orderId,
+      },
+    });
+
+    if (!updatedOrder) {
+      throw new HttpException('Not updated', 400);
+    }
+
+    return await this.ordersRepository.findOne({
+      where: {
+        orderId: orderInfo.orderId,
+      },
+      include: ['status', 'user', 'typeOfPaper'],
+    });
   }
 }
