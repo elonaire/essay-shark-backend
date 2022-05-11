@@ -1,4 +1,5 @@
 import { Sequelize } from 'sequelize-typescript';
+import { Chat, Message, UserChat } from 'src/chat/chat.entity';
 import { SEQUELIZE } from 'src/constants';
 import { FileUpload } from 'src/file-upload/file.entity';
 import { Order, OrderStatus, TypeOfPaper } from 'src/orders/order.entity';
@@ -22,7 +23,10 @@ export const globalDBProvider = {
       FileUpload,
       Order,
       TypeOfPaper,
-      OrderStatus
+      OrderStatus,
+      Chat,
+      Message,
+      UserChat,
     ]);
 
     Order.hasMany(FileUpload, {
@@ -60,6 +64,35 @@ export const globalDBProvider = {
       as: 'user',
       foreignKey: 'userId',
     });
+
+    Chat.hasMany(Message, {
+      as: 'messages',
+    });
+
+    Message.belongsTo(Chat, {
+      as: 'chat',
+      foreignKey: 'chatId',
+    });
+
+    User.belongsToMany(Chat, {
+      as: 'chats',
+      through: UserChat,
+    });
+
+    Chat.belongsToMany(User, {
+      as: 'users',
+      through: UserChat,
+    });
+
+    Message.belongsTo(User, {
+      as: 'sender',
+      foreignKey: 'user_id',
+    });
+
+    User.hasMany(Message, {
+      as: 'messages',
+      foreignKey: 'user_id',
+    })
     await sequelize.sync();
     return sequelize;
   },

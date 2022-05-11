@@ -14,6 +14,7 @@ import { MailingServiceModule } from './mailing-service/mailing-service.module';
 import { UsersModule } from './users/users.module';
 import {MailerModule as NodeMailerModule} from '@nestjs-modules/mailer';
 import { OrdersModule } from './orders/orders.module';
+import { ChatModule } from './chat/chat.module';
 
 @Module({
   imports: [
@@ -41,6 +42,7 @@ import { OrdersModule } from './orders/orders.module';
     }),
     MailingServiceModule,
     OrdersModule,
+    ChatModule,
   ],
   controllers: [AppController],
   providers: [AppService, GoogleStrategy, FacebookStrategy, LinkedInStrategy, SessionSerializer],
