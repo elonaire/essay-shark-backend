@@ -72,12 +72,15 @@ export class AuthService {
         }
     
         // console.log('primaryRole', primaryRole);
+        // const userCopy = {...user};
+        const {password, username, userApproved, ...userDetails} = user['dataValues'];
     
         const payload = { sub: user.user_id, role: primaryRole };
         return {
           access_token: this.jwtService.sign(payload, {
             secret: `${process.env.SECRET}`,
           }),
+          userDetails
         };
       }
 }

@@ -21,7 +21,7 @@ export class User extends Model<User> {
   @Column
   last_name: string;
 
-  @AllowNull(true)
+  @AllowNull(false)
   @Column
   dob: string;
 
@@ -34,7 +34,7 @@ export class User extends Model<User> {
   @Column
   email: string;
 
-  @AllowNull(true)
+  @AllowNull(false)
   @Column
   gender: string;
 
