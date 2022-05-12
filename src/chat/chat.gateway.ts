@@ -11,6 +11,7 @@ import {
 import { Logger, UseGuards } from '@nestjs/common';
 import { Socket, Server } from 'socket.io';
 import { WsGuard } from 'src/auth/ws.guard';
+import { ChatService } from './chat.service';
 
 @WebSocketGateway({
   cors: {
@@ -18,6 +19,10 @@ import { WsGuard } from 'src/auth/ws.guard';
   },
 })
 export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
+    constructor(
+        private readonly chartService: ChatService
+    ) {}
+
   @WebSocketServer()
   server;
 
@@ -27,6 +32,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   @SubscribeMessage('message')
   handleMessage(@MessageBody() data: any) {
     this.server.emit('message', data);
+    this.chartService.createChat(data);
     this.logger.log('data received: ' + data);
   }
 
