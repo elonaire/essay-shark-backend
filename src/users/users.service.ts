@@ -118,11 +118,21 @@ export class UsersService {
         if (userInfo.password) {
           userInfo.password = await bcrypt.hash(userInfo.password, 10);
         }
-        await this.usersRepository.update<User>(userInfo, {
+        const updatedUser = await this.usersRepository.update<User>(userInfo, {
           where: { user_id: userInfo.user_id },
         });
+
+        if(updatedUser[0] === 0) {
+          throw new HttpException('Update not successful', HttpStatus.BAD_REQUEST);
+        }
+
+        const currentDetails = await this.usersRepository.findOne<User>({
+          where: { user_id: userInfo.user_id },
+        });
+
         return {
           message: 'User details updated successfully',
+          currentDetails
         };
       }
     

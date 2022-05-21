@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Query, UseGuards, Headers, Patch } from '@nestjs/common';
+import { Body, Controller, Get, Post, Query, UseGuards, Headers, Patch, Param, Delete } from '@nestjs/common';
 import { ApiBearerAuth, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/auth.guard';
 import { Roles, AuthRole } from 'src/auth/roles.decorator';
@@ -58,5 +58,19 @@ export class OrdersController {
     @Patch('update-order')
     updateOrder(@Body() orderDetails: OrderDto) {
         return this.ordersService.updateOrder(orderDetails);
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth('Authorization')
+    @Patch('update-type-of-paper/:typeOfPaperId')
+    updateTypeOfPaper(@Body() typeOfPaperInfo: TypeOfPaperDto, @Param('typeOfPaperId') typeOfPaperId: string) {
+        return this.ordersService.updateTypeOfPaper(typeOfPaperId, typeOfPaperInfo);
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth('Authorization')
+    @Delete('delete-type-of-paper/:typeOfPaperId')
+    deleteTypeOfPaper(@Param('typeOfPaperId') typeOfPaperId: string) {
+        return this.ordersService.deleteTypeOfPaper(typeOfPaperId);
     }
 }

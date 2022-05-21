@@ -97,6 +97,74 @@ export class OrdersService {
   }
 
   /**
+   * Update type of paper
+   * @param typeOfPaperId 
+   * @param typeOfPaperInfo 
+   * @returns 
+   */
+  async updateTypeOfPaper(
+    typeOfPaperId: string,
+    typeOfPaperInfo: TypeOfPaperDto
+  ): Promise<TypeOfPaper> {
+    const foundTypeOfPaper = await this.typeOfPaperRepo.findOne({
+      where: {
+        typeOfPaperId,
+      },
+    });
+
+    if (!foundTypeOfPaper) {
+      throw new HttpException('Invalid type of paper', 400);
+    }
+
+    const updatedTypeOfPaper = await this.typeOfPaperRepo.update(typeOfPaperInfo, 
+      {
+        where: {
+          typeOfPaperId
+        }
+      }
+    );
+
+    if (!updatedTypeOfPaper) {
+      throw new HttpException('Not updated', 400);
+    }
+
+    return await this.typeOfPaperRepo.findOne({
+      where: {
+        typeOfPaperId,
+      },
+    });
+  }
+
+  /**
+   * delete type of paper
+   * @param typeOfPaperId 
+   * @returns 
+   */
+  async deleteTypeOfPaper(typeOfPaperId: string): Promise<TypeOfPaper> {
+    const foundTypeOfPaper = await this.typeOfPaperRepo.findOne({
+      where: {
+        typeOfPaperId,
+      },
+    });
+
+    if (!foundTypeOfPaper) {
+      throw new HttpException('Invalid type of paper', 400);
+    }
+
+    const deletedTypeOfPaper = await this.typeOfPaperRepo.destroy({
+      where: {
+        typeOfPaperId,
+      },
+    });
+
+    if (!deletedTypeOfPaper) {
+      throw new HttpException('Not deleted', 400);
+    }
+
+    return foundTypeOfPaper;
+  }
+
+  /**
    * Fetch all orders, by id or by type of paper
    * @param param0
    * @returns Promise<Order[] | Order>
