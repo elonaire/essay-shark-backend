@@ -1,10 +1,13 @@
 import { HttpException, Inject, Injectable } from '@nestjs/common';
 import {
+  BID_REPOSITORY,
   ORDER_REPOSITORY,
   ORDER_STATUS_REPOSITORY,
   TYPE_OF_PAPER_REPOSITORY,
 } from 'src/constants';
 import {
+  Bid,
+  BidDto,
   Order,
   OrderDto,
   OrderStatus,
@@ -20,6 +23,11 @@ export interface JwtEncodedUser {
   roles: string;
 }
 
+export interface FetchOrder { 
+  typeOfPaperId?: string;
+  orderId?: string;
+}
+
 @Injectable()
 export class OrdersService {
   constructor(
@@ -27,7 +35,8 @@ export class OrdersService {
     @Inject(TYPE_OF_PAPER_REPOSITORY)
     private typeOfPaperRepo: typeof TypeOfPaper,
     private jwtService: JwtService,
-    @Inject(ORDER_STATUS_REPOSITORY) private orderStatusRepo: typeof OrderStatus
+    @Inject(ORDER_STATUS_REPOSITORY) private orderStatusRepo: typeof OrderStatus,
+    @Inject(BID_REPOSITORY) private bidsRepository: typeof Bid,
   ) {}
 
   /**
@@ -169,7 +178,7 @@ export class OrdersService {
    * @param param0
    * @returns Promise<Order[] | Order>
    */
-  async fetchOrders({ typeOfPaperId, orderId }): Promise<Order[] | Order> {
+  async fetchOrders({ typeOfPaperId, orderId }: FetchOrder): Promise<Order[] | Order> {
     if (typeOfPaperId) {
       const typeOfPaper: TypeOfPaper = await this.typeOfPaperRepo.findOne({
         where: {
@@ -185,7 +194,7 @@ export class OrdersService {
         where: {
           orderId,
         },
-        include: ['status', 'user', 'typeOfPaper'],
+        include: ['status', 'user', 'typeOfPaper', { model: Bid, as: 'bids' },],
       });
 
       if (!order) {
@@ -286,7 +295,7 @@ export class OrdersService {
       },
     });
 
-    if (!updatedOrder) {
+    if (!updatedOrder[0]) {
       throw new HttpException('Not updated', 400);
     }
 
@@ -295,6 +304,114 @@ export class OrdersService {
         orderId: orderInfo.orderId,
       },
       include: ['status', 'user', 'typeOfPaper'],
+    });
+  }
+
+  /**
+   * place Bid
+   * @param bidInfo 
+   * @returns 
+   */
+  async placeBid(bidInfo: BidDto): Promise<Bid> {
+    const foundOrder = await this.ordersRepository.findOne({
+      where: {
+        orderId: bidInfo.orderId,
+      },
+      include: ['status', 'user', 'typeOfPaper'],
+    });
+
+    if (!foundOrder) {
+      throw new HttpException('Invalid order id', 400);
+    }
+
+    const foundBid = await this.bidsRepository.findOne({
+      where: {
+        orderId: bidInfo.orderId,
+      },
+    });
+
+    if (foundBid) {
+      throw new HttpException('Bid already placed', 400);
+    }
+
+    bidInfo.bidId = uuidGenerator();
+    const createdBid = await this.bidsRepository.create(bidInfo);
+
+    if (!createdBid) {
+      throw new HttpException('Not created', 400);
+    }
+
+    return createdBid;
+  }
+
+  async updateBid(bidInfo: BidDto, bidId: string): Promise<Bid> {
+    const foundBid = await this.bidsRepository.findOne({
+      where: {
+        bidId,
+      },
+    });
+
+    if (!foundBid) {
+      throw new HttpException('Invalid bid id', 400);
+    }
+
+    const orderFound = await this.fetchOrders({ orderId: bidInfo.orderId });
+
+    if (!orderFound) {
+      throw new HttpException('Invalid order id', 400);
+    }
+
+    const updatedBid = await this.bidsRepository.update(bidInfo, {
+      where: {
+        bidId: bidInfo.bidId,
+      },
+    });
+
+    if (!updatedBid[0]) {
+      throw new HttpException('Not updated', 400);
+    }
+
+    const foundOrderStatus = await this.orderStatusRepo.findOne({
+      where: {
+        name: 'ASSIGNED',
+      },
+    });
+
+    if (!foundOrderStatus) {
+      throw new HttpException('Invalid order status. Contact Admin', 400);
+    }
+
+    await this.ordersRepository.update({
+      orderStatusId: foundOrderStatus.orderStatusId,
+    }, {
+      where: {
+        orderId: bidInfo.orderId,
+      }
+    });
+
+    return await this.bidsRepository.findOne({
+      where: {
+        bidId: bidInfo.bidId,
+      },
+    });
+  }
+
+  async fetchBids({orderId}): Promise<Bid[]> {
+    const foundOrder = await this.ordersRepository.findOne({
+      where: {
+        orderId,
+      },
+      include: ['status', 'user', 'typeOfPaper'],
+    });
+
+    if (!foundOrder) {
+      throw new HttpException('Invalid order id', 400);
+    }
+
+    return await this.bidsRepository.findAll({
+      where: {
+        orderId,
+      },
     });
   }
 }

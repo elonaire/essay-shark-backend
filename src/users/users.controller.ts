@@ -76,6 +76,7 @@ export class UsersController {
 
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('Authorization')
+  @ApiQuery({ name: 'user_id', required: false})
   @Get('fetch-roles')
   fetchRoles(@Query('user_id') user_id: string): Promise<RoleDto[] | UserRoleDto[]> {
     const args = [{ user_id }].filter(arg => {

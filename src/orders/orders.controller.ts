@@ -2,7 +2,7 @@ import { Body, Controller, Get, Post, Query, UseGuards, Headers, Patch, Param, D
 import { ApiBearerAuth, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/auth.guard';
 import { Roles, AuthRole } from 'src/auth/roles.decorator';
-import { OrderDto, OrderStatusDto, TypeOfPaperDto } from './order.entity';
+import { BidDto, OrderDto, OrderStatusDto, TypeOfPaperDto } from './order.entity';
 import { OrdersService } from './orders.service';
 
 @ApiTags('Orders')
@@ -72,5 +72,27 @@ export class OrdersController {
     @Delete('delete-type-of-paper/:typeOfPaperId')
     deleteTypeOfPaper(@Param('typeOfPaperId') typeOfPaperId: string) {
         return this.ordersService.deleteTypeOfPaper(typeOfPaperId);
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth('Authorization')
+    @Post('place-bid')
+    placeBid(@Body() bidInfo: BidDto) {
+        return this.ordersService.placeBid(bidInfo);
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth('Authorization')
+    @ApiQuery({ name: 'orderId', required: true})
+    @Get('fetch-bids')
+    fetchBids(@Query('orderId') orderId: string) {
+        return this.ordersService.fetchBids({orderId});
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth('Authorization')
+    @Patch('update-bid/:bidId')
+    updateBid(@Body() bidInfo: BidDto, @Param('bidId') bidId: string) {
+        return this.ordersService.updateBid(bidInfo, bidId);
     }
 }

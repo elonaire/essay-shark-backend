@@ -1,8 +1,8 @@
-import { Sequelize } from 'sequelize-typescript';
+import { ForeignKey, Sequelize } from 'sequelize-typescript';
 import { Chat, Message, UserChat } from 'src/chat/chat.entity';
 import { SEQUELIZE } from 'src/constants';
 import { FileUpload } from 'src/file-upload/file.entity';
-import { Order, OrderStatus, TypeOfPaper } from 'src/orders/order.entity';
+import { Bid, Order, OrderStatus, TypeOfPaper } from 'src/orders/order.entity';
 import { Role, User, UserRole } from 'src/users/user.entity';
 
 export const globalDBProvider = {
@@ -27,6 +27,7 @@ export const globalDBProvider = {
       Chat,
       Message,
       UserChat,
+      Bid
     ]);
 
     Order.hasMany(FileUpload, {
@@ -93,6 +94,21 @@ export const globalDBProvider = {
     User.hasMany(Message, {
       as: 'messages',
       foreignKey: 'user_id',
+    })
+
+    User.hasMany(Bid, {
+      as: 'bids',
+      foreignKey: 'userId'
+    })
+
+    Bid.belongsTo(User, {
+      as: 'user',
+      foreignKey: 'userId'
+    })
+
+    Order.hasMany(Bid, {
+      as: 'bids',
+      foreignKey: 'orderId'
     })
     await sequelize.sync();
     return sequelize;

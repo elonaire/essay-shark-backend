@@ -62,6 +62,26 @@ export class OrderStatus extends Model<OrderStatus> {
     name: string;
 }
 
+@Table
+export class Bid extends Model<Bid> {
+    @AllowNull(false)
+    @Column({primaryKey: true})
+    bidId: string;
+
+    @AllowNull(false)
+    @Column
+    orderId: string;
+
+    @AllowNull(false)
+    @ForeignKey(() => User)
+    @Column
+    userId: string;
+
+    @AllowNull(false)
+    @Column({defaultValue: false})
+    accepted: boolean;
+}
+
 export class OrderDto {
     orderId: string;
 
@@ -98,4 +118,17 @@ export class OrderStatusDto {
 
     @ApiProperty()
     name: string;
+}
+
+export class BidDto {
+    bidId: string;
+
+    @ApiProperty()
+    orderId: string;
+
+    @ApiProperty()
+    userId: string;
+
+    @ApiProperty()
+    accepted: boolean;
 }
