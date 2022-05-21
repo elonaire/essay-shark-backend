@@ -30,9 +30,11 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 
   @UseGuards(WsGuard)
   @SubscribeMessage('message')
-  handleMessage(@MessageBody() data: any) {
-    this.server.emit('message', data);
-    this.chartService.createChat(data);
+  async handleMessage(@MessageBody() data: any) {
+    let chatCreated = await this.chartService.createChat(data);
+    if (chatCreated) {
+      this.server.emit('message', chatCreated);
+    }
     this.logger.log('data received: ' + data);
   }
 

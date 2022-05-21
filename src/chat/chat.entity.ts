@@ -12,6 +12,8 @@ export class Message extends Model<Message> {
     @Column({primaryKey: true})
     messageId: string;
 
+    @AllowNull(false)
+    @ForeignKey(() => Chat)
     @Column
     chatId: string;
 
@@ -27,6 +29,7 @@ export class Message extends Model<Message> {
 @Table
 export class UserChat extends Model<UserChat> {
     @ForeignKey(() => User)
+    @Column
     user_id: string;
 
     @ForeignKey(() => Chat)

@@ -67,6 +67,7 @@ export const globalDBProvider = {
 
     Chat.hasMany(Message, {
       as: 'messages',
+      foreignKey: 'chatId',
     });
 
     Message.belongsTo(Chat, {
